@@ -6,6 +6,9 @@
 
 wlrctl window focus steam_app_0 &&
 wlrctl toplevel waitfor steam_app_0 state:focused &&
+# because of how wayland works if the window isn't focused this doesn't work
+# this does mean that if you're doing something in another window it will grab focus to complete
+# the next step
 wlrctl pointer click &&
 wlrctl keyboard type '6'
 sleep 38
