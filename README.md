@@ -2,28 +2,29 @@
 
 ## Table of Contents
 + [About](#about)
-+ [Getting Started](#getting_started)
-+ [Usage](#usage)
-+ [Contributing](../CONTRIBUTING.md)
++ [Overview](#overview)
++ [Utilities](#utilities)
 
 ## About <a name = "about"></a>
-This repository primarily exists to provide a home for shell scripts and services I'm working on or currently use in my day to day.
+A collection of system administration utilities, background services, and automation scripts for use in Linux systems. 
 
-## Getting Started <a name = "getting_started"></a>
-While you can clone this repo, it is currently (as of 02-17-2026) comprised of just a few shell scripts and a systemd service so its likely preferable to copy scripts to a location of your choosing.
+## Overview <a name = "overview"></a>
+This repository demonstrates practical automation for:
+
+- **System Reliability:** Network socket monitoring with automated logging and recovery.
+
+- **Desktop Automation:** Wayland-native input simulation and color scheme extraction.
+
+- **Service Management:** Systemd unit integration for background tasks.
 
 ### Prerequisites
 
-##### For on demand scripts:
-
-- Verify you have the commands being run installed on your system (seeing "command not found" is a good indication you're missing a command in use).
-
-##### For service scripts:
-The same prerequisites apply but I would advise reading the comments as they should provide additional insight into what the script is expecting when run.
+- **OS:** Linux, wayland desktop (auto-wl.sh)
+- **Dependencies:** systemd (q-length.sh service), bash, coreutils, wlrctl (auto-wl.sh)
 
 ### Installing
 
-- Copy the script you would like to use to a file and save it.
+- Clone the repository or copy individual scripts
 - Ensure the script is executable before running
 
 ```
@@ -40,19 +41,20 @@ $ grab-color.sh
 ```
 
 
-## Usage <a name = "usage"></a>
+## Utilities <a name = "utilities"></a>
 
-#### *services/q-length.sh*
-Used to monitor q-length of a connection. 
-- Includes a systemd unit file so it can be run as a service (use --user).
-- Logs to ~/.logs/q.log
-- If running as a service, ensure you've created and defined necessary variables in ~/.config/q-length.conf 
+### *services/q-length.sh*
+Bash daemon designed to monitor network queue lengths that can optionally be run as a service.
+- **Architecture:** Run as needed or as a user-level systemd service with automatic restart policies (Restart=on-failure).
+- **Reliability:** Implements signal trapping (SIGINT/SIGTERM) for graceful shutdowns.
+- **Config:** Decouples logic from configuration using ~/.config/q-length.conf and environment variables.
+- **Logging:** Rotates logs to ~/.logs/q.log to prevent disk exhaustion.
 
-#### *on-demand/gaming-task.sh*
-Used to automate tasks in gaming that require manual input at set intervals in a wayland env. 
-- Could be used for other tasks but would require updating the variables accordingly.
-- I may update this in the future as it currently uses hardcoded values 
-*Don't use this is it would be considered against ToS for the game you're playing*
+### *on-demand/auto-wl.sh*
+An automation script for timed input simulation in Wayland environments.
+- **Tech Stack:** Demonstrates scripting for modern display protocols (Wayland) where X11 tools (xdotool) fail.
+- **Use Case:** Automates sequential tasks on demand.
 
-#### *on-demand/grab-colors.sh*
-Used to grab a list of colors from ~/.cache/wal/colors.sh and format it so that it only lists the colors for use elsewhere.
+### *on-demand/grab-colors.sh*
+A parsing tool to sanitize and format color schemes from pywal caches.
+- **Function:** Parses ~/.cache/wal/colors.sh using sed/awk to generate clean hex-code lists for downstream applications.
