@@ -21,8 +21,8 @@ else
 fi
 
 INTV=0.5
-IP="${1:-$IP}" # Check args first, then environment variables (from systemd)
-THR="${2:-$THR}"
+IP="${1:-${IP:-}}" # Check args first, then environment variables (from systemd)
+THR="${2:-${THR:-}}"
 
 # Interactive Prompts (Only run if attached to a terminal)
 if [ "$INTERACTIVE" -eq 1 ]; then
