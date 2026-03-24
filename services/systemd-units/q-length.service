@@ -1,21 +1,15 @@
 [Unit]
-Description=systemd unit for q-length.sh
-# This unit is designed to be run as a user so "systemctl --user"
-# so it will fail if the network is down but running with --user
-# affords us additional isolation.
-
-
+# version for system install
+Description=Queue Length Monitor Service
+After=network-online.target
+Wants=network-online.target
 [Service]
 Type=simple
-# IMPORTANT !!
-# This assumes you've created a config file ~/.config/q-length.conf 
-# it should contain the the variables for IP and THR
-EnvironmentFile=%h/.config/q-length.conf
-# Ensure q-length.sh is installed under ~/.local/bin or modify
-# the ExecStart location accordingly
-ExecStart=%h/.local/bin/q-length.sh $IP $THR
+# env files moved to /etc for system install
+EnvironmentFile=/etc/q-length.conf
+# same rationale for script location
+ExecStart=/usr/local/bin/q-length.sh $IP $THR
 Restart=on-failure
-RestartSec=10s
-
+RestartSec=10s 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
