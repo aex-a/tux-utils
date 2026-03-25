@@ -54,13 +54,16 @@ fi
    # Trap SIGINT (Ctrl+C) and SIGTERM (systemctl stop)
    trap cleanup SIGINT SIGTERM
    
-# Begin monitoring and logging
-while true; do
-	ss -t -H dst "$IP" | awk -v threshold="$THR" \
-		'$3 > threshold { \
-   print "[ " strftime("%Y-%m-%d %H:%M:%S") " ] - INFO: High Send-Q found."; \
-   print $0 \
-   }' >>"$LOGFILE"
-
-	sleep "$INTV"
-done
+   # Begin monitoring and logging
+   while true; do
+       if [ "$INTERACTIVE" -eq 1 ]; then
+           ss -t -H dst "$IP" | awk -v threshold="$THR" \
+               '$3 > threshold { print "[ " strftime("%Y-%m-%d %H:%M:%S") " ] - INFO: High Send-Q
+   found."; print $0 }' >> "$LOGFILE"
+       else
+           ss -t -H dst "$IP" | awk -v threshold="$THR" \
+               '$3 > threshold { print "[ " strftime("%Y-%m-%d %H:%M:%S") " ] - INFO: High Send-Q
+   found."; print $0 }'
+       fi
+       sleep "$INTV"
+   done
