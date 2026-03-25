@@ -45,14 +45,14 @@ if [[ -z "$IP" ]] || [[ -z "$THR" ]]; then
 	exit 1
 fi
 
-   # Graceful Shutdown function
-   cleanup() {
-       echo "[ " $(date "+%Y-%m-%d %H:%M:%S") " ] - INFO: Received termination signal. Shutting down gracefully." >> "$LOGFILE"
-       exit 0
-   }
+# Graceful Shutdown function
+cleanup() {
+    echo "[ $(date '+%Y-%m-%d %H:%M:%S') ] - INFO: Received termination signal. Shutting down gracefully." >> "$LOGFILE"
+    exit 0
+}
 
-   # Trap SIGINT (Ctrl+C) and SIGTERM (systemctl stop)
-   trap cleanup SIGINT SIGTERM
+# Trap SIGINT (Ctrl+C) and SIGTERM (systemctl stop)
+trap cleanup SIGINT SIGTERM
    
 # Begin monitoring and logging
 while true; do
