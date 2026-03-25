@@ -45,10 +45,9 @@ $ grab-color.sh
 
 ### *services/q-length.sh*
 Bash daemon designed to monitor network queue lengths that can optionally be run as a service.
-- **Architecture:** Run as needed or as a user-level systemd service with automatic restart policies (Restart=on-failure).
-- **Reliability:** Implements signal trapping (SIGINT/SIGTERM) for graceful shutdowns.
-- **Config:** Decouples logic from configuration using ~/.config/q-length.conf and environment variables.
-- **Logging:** Rotates logs to ~/.logs/q.log to prevent disk exhaustion.
+- **Architecture:** Dual-mode execution. Automatically detects environment to run interactively via TTY (with user prompts) or seamlessly as a background system-level daemon (`multi-user.target`).
+- **Config:** Decouples logic from configuration using `/etc/q-length.conf` for system services, or environment variables for local execution.
+- **Logging:** Context-aware logging. Writes to `~/.logs/q.log` when run interactively, or outputs directly to `stdout` for native `journalctl` integration when run as a system daemon. 
 
 ### *on-demand/auto-wl.sh*
 An automation script for timed input simulation in Wayland environments.
