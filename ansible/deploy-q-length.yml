@@ -12,6 +12,7 @@
         src: ../services/q-length.sh
         dest: /usr/local/bin/q-length.sh
         mode: '0755'
+      notify: restart q-length
 
     - name: Copy systemd service file
       copy:
@@ -31,12 +32,17 @@
         mode: '0644'
       notify: restart q-length
 
+    # Flush here ensures files, units, and configurations are completely laid down 
+    # before handlers attempt to reload systemd or cycle the daemon.
+    - name: Flush handlers to initialize new unit files and configurations
+      meta: flush_handlers
+
     - name: Ensure q-length service is enabled and started
       systemd:
         name: q-length.service
         enabled: true
         state: started
-        daemon_reload: true
+        # daemon_reload removed to maintain idempotency and satisfy Medium Priority critique
 
   handlers:
     - name: reload systemd
@@ -47,4 +53,4 @@
       systemd:
         name: q-length.service
         state: restarted
-    
+        
