@@ -36,6 +36,7 @@
         name: q-length.service
         enabled: true
         state: started
+        daemon_reload: true
 
   handlers:
     - name: reload systemd

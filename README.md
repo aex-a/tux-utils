@@ -49,6 +49,10 @@ Bash daemon designed to monitor network queue lengths that can optionally be run
 - **Config:** Decouples logic from configuration using `/etc/q-length.conf` for system services, or environment variables for local execution.
 - **Logging:** Context-aware logging. Writes to `~/.logs/q.log` when run interactively, or outputs directly to `stdout` for native `journalctl` integration when run as a system daemon. 
 
+#### Enterprise Deployment
+To deploy the `q-length` daemon across multiple nodes, use the included Ansible playbook:
+`ansible-playbook -i your_inventory ansible/deploy-q-length.yml`
+
 ### *on-demand/auto-wl.sh*
 An automation script for timed input simulation in Wayland environments.
 - **Tech Stack:** Demonstrates scripting for modern display protocols (Wayland) where X11 tools (xdotool) fail.
