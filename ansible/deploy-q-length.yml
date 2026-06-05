@@ -1,0 +1,57 @@
+---
+- name: Deploy q-length network monitoring daemon
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Copy q-length.sh to /usr/local/bin
+      ansible.builtin.copy:
+        src: ../services/q-length.sh
+        dest: /usr/local/bin/q-length.sh
+        owner: root
+        group: root
+        mode: '0755'
+        backup: true
+      notify: restart q-length
+
+    - name: Copy systemd service file
+      ansible.builtin.copy:
+        src: ../services/systemd-units/q-length.service
+        dest: /etc/systemd/system/q-length.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - reload systemd
+        - restart q-length
+
+    - name: Create q-length configuration file
+      ansible.builtin.copy:
+        dest: /etc/q-length.conf
+        content: |
+          IP="{{ q_length_monitor_ip | default('1.1.1.1', true) }}"
+          THR="{{ q_length_monitor_thr | default('50', true) }}"
+        owner: root
+        group: root
+        mode: '0644'
+        backup: true
+      notify: restart q-length
+
+    - name: Flush handlers to initialize new unit files and configurations
+      ansible.builtin.meta: flush_handlers
+
+    - name: Ensure q-length service is enabled and started
+      ansible.builtin.systemd:
+        name: q-length.service
+        enabled: true
+        state: started
+
+  handlers:
+    - name: reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+       
+    - name: restart q-length
+      ansible.builtin.systemd:
+        name: q-length.service
+        state: restarted
