@@ -8,49 +8,64 @@
 
   tasks:
     - name: Copy q-length.sh to /usr/local/bin
-      copy:
+      ansible.builtin.copy:
         src: ../services/q-length.sh
         dest: /usr/local/bin/q-length.sh
+        owner: root
+        group: root
         mode: '0755'
+        # Automatically apply the correct SELinux context if SELinux is active
+        seuser: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        serole: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        setype: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        selevel: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
       notify: restart q-length
 
     - name: Copy systemd service file
-      copy:
+      ansible.builtin.copy:
         src: ../services/systemd-units/q-length.service
         dest: /etc/systemd/system/q-length.service
+        owner: root
+        group: root
         mode: '0644'
+        seuser: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        serole: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        setype: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        selevel: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
       notify:
         - reload systemd
         - restart q-length
 
     - name: Create q-length configuration file
-      copy:
+      ansible.builtin.copy:
         dest: /etc/q-length.conf
         content: |
           IP="{{ monitor_ip }}"
           THR="{{ monitor_thr }}"
+        owner: root
+        group: root
         mode: '0644'
+        seuser: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        serole: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        setype: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
+        selevel: "{{ (ansible_selinux.status == 'enabled') | ternary('_default', omit) }}"
       notify: restart q-length
 
-    # Flush here ensures files, units, and configurations are completely laid down 
-    # before handlers attempt to reload systemd or cycle the daemon.
     - name: Flush handlers to initialize new unit files and configurations
-      meta: flush_handlers
+      ansible.builtin.meta: flush_handlers
 
     - name: Ensure q-length service is enabled and started
-      systemd:
+      ansible.builtin.systemd:
         name: q-length.service
         enabled: true
         state: started
-        # daemon_reload removed to maintain idempotency and satisfy Medium Priority critique
 
   handlers:
     - name: reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: true
        
     - name: restart q-length
-      systemd:
+      ansible.builtin.systemd:
         name: q-length.service
         state: restarted
-        
