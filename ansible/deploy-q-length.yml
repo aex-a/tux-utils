@@ -1,0 +1,33 @@
+---
+- name: Deploy q-length network monitoring daemon
+  hosts: all
+  become: true
+  vars:
+    monitor_ip: "1.1.1.1"
+    monitor_thr: "50"
+
+  tasks:
+    - name: Copy q-length.sh to /usr/local/bin
+      copy:
+        src: ../services/q-length.sh
+        dest: /usr/local/bin/q-length.sh
+        mode: '0755'
+
+    - name: Copy systemd service file
+      copy:
+        src: ../services/systemd-units/q-length.service
+        dest: /etc/systemd/system/q-length.service
+
+    - name: Create q-length configuration file
+      copy:
+        dest: /etc/q-length.conf
+        content: |
+          IP="{{ monitor_ip }}"
+          THR="{{ monitor_thr }}"
+
+    - name: Reload systemd and enable q-length service
+      systemd:
+        daemon_reload: yes
+        name: q-length.service
+        enabled: yes
+        state: started
